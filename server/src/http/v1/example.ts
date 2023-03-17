@@ -1,5 +1,9 @@
-import { ServerContext } from '../middleware/context'
+import { ServerContext } from '../middleware/context.js'
 
-export async function handler(ctx: ServerContext) {
+type ExampleResponse = {
+	message: string
+}
+
+export async function handler(ctx: ServerContext<void, ExampleResponse>) {
 	ctx.body = { message: 'success' }
 }

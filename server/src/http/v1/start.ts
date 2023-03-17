@@ -1,6 +1,8 @@
 import { ServerContext } from '../middleware/context'
 
-export async function handler(ctx: ServerContext) {
+type StartRequest = Record<string, never>
+
+export async function handler(ctx: ServerContext<StartRequest, void>) {
 	const auth = ctx.getAuth()
 	const accountService = ctx.getAccountService()
 

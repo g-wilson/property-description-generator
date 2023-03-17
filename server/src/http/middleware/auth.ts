@@ -3,7 +3,7 @@ import createHttpError from 'http-errors'
 import { getAuth } from 'firebase-admin/auth'
 import { OAuth2Client } from 'google-auth-library'
 
-import { AuthContext, AuthContextProvider, ServerContext } from '../middleware/context.js'
+import { ServerContext } from '../middleware/context.js'
 import { ErrMsg } from '../types.js'
 import { IS_TEST, IS_DEVELOPMENT, FIREBASE_PROJECT_ID, SYSTEM_SERVICE_ACCOUNT, ID_ENV_PREFIX } from '../../lib/service-context/index.js'
 
@@ -11,6 +11,41 @@ const canUseResolverOverride = ((IS_TEST || IS_DEVELOPMENT) && process.env.AUTH_
 const authResolverOverride = canUseResolverOverride ? process.env.AUTH_RESOLVER : undefined // eslint-disable-line no-process-env
 
 const authClient = new OAuth2Client()
+
+export type AuthContext = {
+	system: boolean
+	userId: string
+	phoneNumber: string | null
+	accountId: string | null
+}
+
+export class AuthContextProvider {
+
+	ctx: AuthContext
+
+	constructor(ctx: AuthContext) {
+		this.ctx = ctx
+	}
+
+	getUser() {
+		return this.ctx.userId
+	}
+
+	getAccount() {
+		if (!this.ctx.accountId)
+			throw createHttpError(403, 'missing_account', { expose: true })
+
+		return this.ctx.accountId
+	}
+
+	getPhoneNumber() {
+		if (!this.ctx.phoneNumber)
+			throw createHttpError(403, 'missing_phone_number', { expose: true })
+
+		return this.ctx.phoneNumber
+	}
+
+}
 
 type ResolverFn = (ctx: ServerContext, authToken: string) => Promise<AuthContext>
 

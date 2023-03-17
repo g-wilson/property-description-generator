@@ -22,4 +22,13 @@ router.use(createAuthMiddleware('firebase'))
  */
 router.post('/start', start.handler)
 router.post('/agree_terms', agreeTerms.schema, agreeTerms.handler)
-router.get('/example', requireOnboarding(), example.handler)
+
+/**
+ * Onboarding required past this point
+ */
+router.use(requireOnboarding())
+
+/**
+ * Playing for now
+ */
+router.get('/example', example.handler)

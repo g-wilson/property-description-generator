@@ -1,4 +1,3 @@
-import createHttpError from 'http-errors'
 import { middleware as jsonschema } from 'koa-json-schema'
 import { ServerContext } from '../middleware/context.js'
 
