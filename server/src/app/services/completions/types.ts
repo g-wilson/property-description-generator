@@ -15,6 +15,7 @@ export type OpenAIUsage = {
 }
 
 export type OpenAICompletionResult = {
+	latency: number
 	openai_completion_id: string
 	openai_usage?: OpenAIUsage
 	openai_choices?: OpenAIChoice[]
@@ -28,6 +29,7 @@ export interface Completion {
 	updated_at: Date
 	status: Status
 	failure_reason?: string
+	latency?: number
 	openai_completion_id?: string
 	openai_params?: OpenAICreateCompletionParams
 	openai_usage?: OpenAIUsage

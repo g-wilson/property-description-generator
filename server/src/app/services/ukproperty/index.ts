@@ -132,6 +132,7 @@ export default class UKPropertyService {
 		}
 
 		const cmpl = await this.completionService.createPending(accountId, userId, req)
+		const startTime = Date.now()
 
 		try {
 			const response = await this.openai.createChatCompletion(req)
@@ -141,6 +142,7 @@ export default class UKPropertyService {
 				throw new Error('chat_response_message_missing')
 
 			await this.completionService.updateSuccess(cmpl._id, {
+				latency: (Date.now() - startTime),
 				openai_completion_id: response.data.id,
 				openai_usage: response.data.usage,
 				openai_choices: response.data.choices,
