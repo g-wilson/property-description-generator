@@ -78,7 +78,13 @@ test.serial('api: start', async t => {
 test.serial('api: example authenticated endpoint succeeds', async t => {
 	const { api } = t.context
 
-	const res = await api.get('/v1/example')
+	const res = await api.post('/v1/uk_property_listing', {
+		postcode: 'EC1R 0HA',
+		property_type: 'flat',
+		floors: 1,
+		bedrooms: 2,
+		bathrooms: 1,
+	})
 
-	t.is(res?.data.message, 'success')
+	t.truthy(res?.data.description)
 })

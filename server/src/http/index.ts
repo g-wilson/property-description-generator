@@ -15,6 +15,8 @@ import v1routes from './v1/index.js'
 
 import { AccountService } from '../app/services/accounts/service.js'
 import { AccountRepositoryMongo } from '../app/services/accounts/repository.js'
+import { CompletionService } from '../app/services/completions/index.js'
+import { CompletionRepositoryMongo } from '../app/services/completions/repository.js'
 
 async function init() {
 	const server = new Koa<Koa.DefaultState, ServerDefaultContext>({ proxy: true })
@@ -64,10 +66,14 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	const accountRepository = new AccountRepositoryMongo({ mongoClient, mongodb })
 	const accountService = new AccountService({ repository: accountRepository })
 
+	const completionRepository = new CompletionRepositoryMongo({ mongoClient, mongodb })
+	const completionService = new CompletionService({ repository: completionRepository })
+
 	ctx.getFirebase = () => firebase
 	ctx.getMongoDB = () => mongodb
 	ctx.getOpenAI = () => openaiClient
 	ctx.getAccountService = () => accountService
+	ctx.getCompletionService = () => completionService
 }
 
 try {

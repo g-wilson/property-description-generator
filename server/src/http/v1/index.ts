@@ -8,7 +8,7 @@ import requireOnboarding from '../middleware/require-onboarding.js'
 
 import * as start from './start.js'
 import * as agreeTerms from './agree_terms.js'
-import * as example from './example.js'
+import * as ukProperty from './ukproperty.js'
 
 const router = new Router<DefaultState, ServerContext>()
 
@@ -31,4 +31,4 @@ router.use(requireOnboarding())
 /**
  * Playing for now
  */
-router.get('/example', example.handler)
+router.post('/uk_property_listing', ukProperty.schema, ukProperty.handler)
