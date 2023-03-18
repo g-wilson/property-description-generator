@@ -54,7 +54,7 @@ module.exports = {
 		'max-nested-callbacks': [ 2, 3 ],
 		'max-statements-per-line': 2,
 		'new-parens': 2,
-		'newline-per-chained-call': 2,
+		'newline-per-chained-call': [ 2, { ignoreChainWithDepth: 3 } ],
 		'no-alert': 2,
 		'no-array-constructor': 2,
 		'no-await-in-loop': 2,

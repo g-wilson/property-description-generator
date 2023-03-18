@@ -3,12 +3,12 @@ import bunyan from 'bunyan'
 
 import { ServerContext } from './context'
 import { GoogleCloudLogger } from '../../lib/google-cloud-logger/index.js'
-import { FIREBASE_PROJECT_ID, IS_GCLOUD } from '../../lib/service-context/index.js'
+import { FIREBASE_PROJECT_ID, IS_GCLOUD, COMPONENT_NAME } from '../../lib/service-context/index.js'
 
 const LOG_LEVEL = (process.env.LOG_LEVEL ?? 'info') as bunyan.LogLevel // eslint-disable-line no-process-env
 
 const bunyanConfig: bunyan.LoggerOptions = {
-	name: 'outside-api',
+	name: COMPONENT_NAME,
 	level: LOG_LEVEL,
 }
 

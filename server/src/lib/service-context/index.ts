@@ -17,6 +17,8 @@ export const IS_GCLOUD = Boolean(process.env.K_SERVICE)
 
 export const SYSTEM_SERVICE_ACCOUNT = IS_GCLOUD ? `${process.env.K_SERVICE}@${FIREBASE_PROJECT_ID}.iam.gserviceaccount.com` : '__placeholder__'
 
+export const COMPONENT_NAME = IS_GCLOUD && process.env.K_SERVICE ? process.env.K_SERVICE : 'server'
+
 export const ID_ENV_PREFIX = ((): string => {
 	if (IS_DEVELOPMENT)
 		return 'dev'
