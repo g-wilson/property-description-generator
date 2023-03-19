@@ -1,7 +1,7 @@
 import createHttpError from 'http-errors'
 import { OpenAIApi, CreateChatCompletionRequest } from 'openai'
 
-import { CompletionServiceInterface } from '../completions/types'
+import { CompletionServiceInterface, COMPLETION_TYPES } from '../completions/types.js'
 import { getRequestLogger } from '../../../lib/logger/index.js'
 
 export type UKPropertyListingCharacter = {
@@ -133,7 +133,7 @@ export class UKPropertyService {
 			],
 		}
 
-		const cmpl = await this.completionService.createPending(accountId, userId, req)
+		const cmpl = await this.completionService.createPending(accountId, userId, COMPLETION_TYPES.UK_PROPERTY_LISTING_V1, req)
 		const startTime = Date.now()
 
 		try {
@@ -151,6 +151,7 @@ export class UKPropertyService {
 
 			await this.completionService.updateSuccess(cmpl._id, {
 				latency: (Date.now() - startTime),
+				response: responseMessage,
 				openai_completion_id: response.data.id,
 				openai_usage: response.data.usage,
 				openai_choices: response.data.choices,

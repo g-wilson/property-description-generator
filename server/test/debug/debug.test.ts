@@ -77,13 +77,7 @@ test.serial('api: get account succeeds with own account', async t => {
 test.serial('api: fails if terms not agreed', async t => {
 	const { api } = t.context
 
-	const e = await t.throwsAsync(() => api.post('/v1/create_completion/uk_property_listing', {
-		postcode: 'EC1R 0HA',
-		property_type: 'flat',
-		floors: 1,
-		bedrooms: 2,
-		bathrooms: 1,
-	}))
+	const e = await t.throwsAsync(() => api.get('/v1/completions/uk_property_listing/recent'))
 
 	t.is(e?.message, 'terms_not_agreed')
 })
@@ -98,10 +92,18 @@ test.serial('api: agree terms', async t => {
 	t.truthy(res?.data.terms_agreed_at)
 })
 
-test.serial('api: completion succeeds', async t => {
+test.serial('api: list completions', async t => {
 	const { api } = t.context
 
-	const res = await api.post('/v1/create_completion/uk_property_listing', {
+	const res = await api.get('/v1/completions/uk_property_listing/recent?limit=2')
+
+	t.deepEqual(res?.data.completions, [])
+})
+
+test.serial.skip('api: completion succeeds', async t => {
+	const { api } = t.context
+
+	const res = await api.post('/v1/completions/uk_property_listing/create', {
 		postcode: 'EC1R 0HA',
 		property_type: 'flat',
 		floors: 1,

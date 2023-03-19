@@ -1,5 +1,5 @@
 import { MongoRepository } from '../../../lib/mongo/index.js'
-import { Completion, CompletionRepository } from './types.js'
+import { Completion, CompletionRepository, PendingCompletion, RepositoryCreateParams, RepositoryUpdateParams, Status, SuccessfulCompletion } from './types.js'
 import { ulid } from 'ulid'
 import { DateTime } from 'luxon'
 import { ID_ENV_PREFIX } from '../../../lib/service-context/index.js'
@@ -25,10 +25,10 @@ export class CompletionRepositoryMongo extends MongoRepository implements Comple
 		return cmpl
 	}
 
-	async create(params: Omit<Completion, '_id' | 'created_at' | 'updated_at'>): Promise<Completion> {
+	async create(params: RepositoryCreateParams): Promise<PendingCompletion> {
 		const newCompletionId = generateCompletionId()
 
-		const cmpl: Completion = {
+		const cmpl: PendingCompletion = {
 			_id: newCompletionId,
 			created_at: DateTime.fromJSDate(new Date()).toUTC().toBSON(),
 			updated_at: DateTime.fromJSDate(new Date()).toUTC().toBSON(),
@@ -36,12 +36,12 @@ export class CompletionRepositoryMongo extends MongoRepository implements Comple
 		}
 
 		await this.db.collection<Completion>('completions')
-			.insertOne(cmpl)
+			.insertOne(cmpl as Completion)
 
 		return cmpl
 	}
 
-	async update(completionId: string, params: Omit<Completion, '_id' | 'created_at' | 'updated_at'>): Promise<void> {
+	async update(completionId: string, params: RepositoryUpdateParams): Promise<void> {
 		await this.db.collection<Completion>('completions')
 			.updateOne({ _id: completionId }, {
 				$set: {
@@ -49,6 +49,18 @@ export class CompletionRepositoryMongo extends MongoRepository implements Comple
 					...params,
 				},
 			}, { upsert: true })
+	}
+
+	async listRecentForAccount(accountId: string, type: string, limit: number): Promise<SuccessfulCompletion[]> {
+		return await this.db.collection<Completion>('completions')
+			.find({
+				account_id: accountId,
+				status: Status.success,
+				type: type,
+			})
+			.sort('created_at', -1)
+			.limit(limit)
+			.toArray() as SuccessfulCompletion[]
 	}
 
 }

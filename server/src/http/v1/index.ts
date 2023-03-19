@@ -9,7 +9,8 @@ import requireOnboarding from '../middleware/require-onboarding.js'
 import * as start from './start.js'
 import * as agreeTerms from './account/agree_terms.js'
 import * as getAccount from './account/get_account.js'
-import * as ukProperty from './completions/ukproperty.js'
+import * as createCompletion from './completions/create.js'
+import * as listRecent from './completions/list_recent.js'
 
 const router = new Router<DefaultState, ServerContext>()
 
@@ -37,4 +38,5 @@ router.use(requireOnboarding())
 /**
  * Completions
  */
-router.post('/create_completion/uk_property_listing', ukProperty.schema, ukProperty.handler)
+router.post('/completions/uk_property_listing/create', createCompletion.schema, createCompletion.handler)
+router.get('/completions/uk_property_listing/recent', listRecent.schema, listRecent.handler)
