@@ -6,11 +6,12 @@ import openai from 'openai'
 import { initializeApp, applicationDefault } from 'firebase-admin/app'
 
 import { getMongoDatabase, getMongoClient } from '../lib/mongo/index.js'
+import { logger, createMiddleware as createRequestLogMiddleware } from '../lib/logger/index.js'
 import { ServerDefaultContext, ServerContext } from './middleware/context.js'
 import status from './middleware/status.js'
 import error from './middleware/error.js'
 import notFound from './middleware/not-found.js'
-import { logger, requestLogger } from './middleware/logger.js'
+
 import v1routes from './v1/index.js'
 
 import { AccountService } from '../app/services/accounts/service.js'
@@ -25,7 +26,7 @@ async function init() {
 	await attachDependencies(server.context)
 
 	server.use(status())
-	server.use(requestLogger())
+	server.use(createRequestLogMiddleware())
 	server.use(error())
 
 	router.use('/v1', v1routes.middleware())

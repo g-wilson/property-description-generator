@@ -7,7 +7,7 @@ const BUNYAN_TO_STACKDRIVER = new Map([
 	[ 10, 'DEBUG' ],
 ])
 
-export class GoogleCloudLogger {
+export class GoogleCloudLogStreamer {
 
 	_formatErrorReport(chunk) {
 		let errorText = chunk.error

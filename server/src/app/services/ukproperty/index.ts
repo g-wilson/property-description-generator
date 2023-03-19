@@ -1,6 +1,8 @@
 import createHttpError from 'http-errors'
 import { OpenAIApi, CreateChatCompletionRequest } from 'openai'
+
 import { CompletionServiceInterface } from '../completions/types'
+import { getRequestLogger } from '../../../lib/logger/index.js'
 
 export type UKPropertyListingCharacter = {
 	new_build: boolean
@@ -140,6 +142,12 @@ export default class UKPropertyService {
 			const responseMessage = response.data.choices[0]?.message?.content ?? ''
 			if (!responseMessage)
 				throw new Error('chat_response_message_missing')
+
+			getRequestLogger().info('openai_completion_success', {
+				latency: (Date.now() - startTime),
+				openai_completion_id: response.data.id,
+				openai_usage: response.data.usage,
+			})
 
 			await this.completionService.updateSuccess(cmpl._id, {
 				latency: (Date.now() - startTime),
