@@ -68,6 +68,7 @@ export default function createAuthMiddleware(resolver: string): Middleware<Defau
 			const authCtxProvider = new AuthContextProvider(authCtx)
 
 			ctx.log.fields.auth_user_id = authCtx.userId
+			ctx.log.fields.auth_account_id = authCtx.accountId
 
 			ctx.getAuth = () => authCtxProvider
 		} catch (e) {

@@ -15,6 +15,7 @@ interface TestContext {
 	user: TestUser
 	api: APIHelper
 	serverProcess?: ChildProcess
+	account_id?: string
 }
 
 export const test = ava as TestFn<TestContext>
@@ -38,9 +39,16 @@ test.before(async t => {
 	const user = { userId: '622f7c16fc13ae6e690001a5', phoneNumber: '+19000000002' }
 	const api = new APIHelper('http://localhost:3000', JSON.stringify(user))
 
+	// check status
+	await t.notThrowsAsync(() => api.get('/'))
+
+	// provision user and account for testing
+	const startRes = await api.post('/v1/start', {})
+
 	t.context = {
 		user,
 		api,
+		account_id: startRes?.data.account_id
 		// serverProcess,
 	}
 })
@@ -49,36 +57,51 @@ test.before(async t => {
 // 	t.context.serverProcess.kill()
 // })
 
-test.serial('api: status', async t => {
+test.serial('api: get account fails with other account', async t => {
 	const { api } = t.context
 
-	await t.notThrowsAsync(() => api.get('/'))
+	const e = await t.throwsAsync(() => api.get(`/v1/account/dev_acc_AADSFGAG713`))
+
+	t.is(e?.message, 'account_not_found')
 })
 
-test.serial('api: start fails', async t => {
+test.serial('api: get account succeeds with own account', async t => {
+	const { api, account_id } = t.context
+
+	const res = await api.get(`/v1/account/${account_id}`)
+
+	t.truthy(res?.data.id)
+	t.falsy(res?.data.terms_agreed_at)
+})
+
+test.serial('api: fails if terms not agreed', async t => {
 	const { api } = t.context
 
-	const e = await t.throwsAsync(() => api.post('/v1/start', {}))
+	const e = await t.throwsAsync(() => api.post('/v1/create_completion/uk_property_listing', {
+		postcode: 'EC1R 0HA',
+		property_type: 'flat',
+		floors: 1,
+		bedrooms: 2,
+		bathrooms: 1,
+	}))
 
 	t.is(e?.message, 'terms_not_agreed')
 })
 
 test.serial('api: agree terms', async t => {
-	const { api } = t.context
+	const { api, account_id } = t.context
 
-	await t.notThrowsAsync(() => api.post('/v1/agree_terms', { terms_version: '2023-03-16' }))
+	await t.notThrowsAsync(() => api.post(`/v1/account/${account_id}/agree_terms`, { terms_version: '2023-03-16' }))
+
+	const res = await api.get(`/v1/account/${account_id}`)
+
+	t.truthy(res?.data.terms_agreed_at)
 })
 
-test.serial('api: start', async t => {
+test.serial('api: completion succeeds', async t => {
 	const { api } = t.context
 
-	await t.notThrowsAsync(() => api.post('/v1/start', {}))
-})
-
-test.serial('api: example authenticated endpoint succeeds', async t => {
-	const { api } = t.context
-
-	const res = await api.post('/v1/uk_property_listing', {
+	const res = await api.post('/v1/create_completion/uk_property_listing', {
 		postcode: 'EC1R 0HA',
 		property_type: 'flat',
 		floors: 1,

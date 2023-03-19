@@ -89,7 +89,7 @@ export type UKPropertyListingPromptParams = {
 	location?: UKPropertyListingLocation
 }
 
-export default class UKPropertyService {
+export class UKPropertyService {
 
 	private readonly modelOptions = {
 		model: 'gpt-3.5-turbo',

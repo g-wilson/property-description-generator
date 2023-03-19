@@ -1,7 +1,7 @@
 import { middleware as jsonschema } from 'koa-json-schema'
 
-import UKPropertyService, { UKPropertyListingPromptParams } from '../../app/services/ukproperty/index.js'
-import { ServerContext } from '../middleware/context.js'
+import { UKPropertyService, UKPropertyListingPromptParams } from '../../../app/services/ukproperty/index.js'
+import { ServerContext } from '../../middleware/context.js'
 
 export const schema = jsonschema({
 	type: 'object',

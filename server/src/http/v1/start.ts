@@ -2,13 +2,17 @@ import { ServerContext } from '../middleware/context'
 
 type StartRequest = Record<string, never>
 
-export async function handler(ctx: ServerContext<StartRequest, void>) {
+type StartResponse = {
+	account_id: string
+}
+
+export async function handler(ctx: ServerContext<StartRequest, StartResponse>) {
 	const auth = ctx.getAuth()
 	const accountService = ctx.getAccountService()
 
 	const acc = await accountService.ensureAccountForUser(auth.getUser())
 
-	await accountService.checkTermsAgreed(acc._id)
-
-	ctx.status = 204
+	ctx.body = {
+		account_id: acc._id,
+	}
 }
