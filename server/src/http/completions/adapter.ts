@@ -1,4 +1,4 @@
-import { SuccessfulCompletion } from "../../../app/services/completions/types";
+import { SuccessfulCompletion } from '../../services/completions/types'
 
 export type ListedCompletion = {
 	created_at: Date

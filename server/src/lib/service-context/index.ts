@@ -15,8 +15,6 @@ export const FIREBASE_PROJECT_ID = env.require('FIREBASE_PROJECT_ID')
 
 export const IS_GCLOUD = Boolean(process.env.K_SERVICE)
 
-export const SYSTEM_SERVICE_ACCOUNT = IS_GCLOUD ? `${process.env.K_SERVICE}@${FIREBASE_PROJECT_ID}.iam.gserviceaccount.com` : '__placeholder__'
-
 export const COMPONENT_NAME = IS_GCLOUD && process.env.K_SERVICE ? process.env.K_SERVICE : `${FIREBASE_PROJECT_ID}-local`
 
 export const ID_ENV_PREFIX = ((): string => {
@@ -26,8 +24,11 @@ export const ID_ENV_PREFIX = ((): string => {
 	if (IS_TEST)
 		return 'test'
 
-	if (IS_GCLOUD && process.env.ID_ENV_PREFIX)
+	if (process.env.ID_ENV_PREFIX && process.env.ID_ENV_PREFIX === 'prod')
+		return ''
+
+	if (process.env.ID_ENV_PREFIX)
 		return process.env.ID_ENV_PREFIX
 
-	return ''
+	return 'noenv'
 })()

@@ -6,17 +6,9 @@
   "scripts": {
     "dev": "nodemon --exec 'node --loader ts-node/esm' ./src/http/index.ts | bunyan",
     "build": "tsc --project tsconfig.production.json",
-    "test": "ava ./test/app ./test/http ./test/lib --timeout=1m",
-    "test-debug": "ava ./test/debug --timeout=10m",
+    "test": "tsc --project tsconfig.test.json && ava ./dist/test/http ./dist/test/services --timeout=1m",
+    "test-debug": "tsc --project tsconfig.test.json && ava ./dist/test/debug --timeout=10m",
     "lint": "eslint . --ext .js,.ts --quiet"
-  },
-  "ava": {
-    "extensions": {
-      "ts": "module"
-    },
-    "nodeArguments": [
-      "--loader=ts-node/esm"
-    ]
   },
   "dependencies": {
     "await-limit": "^0.1.3",
@@ -37,8 +29,8 @@
     "ulid": "^2.3.0"
   },
   "devDependencies": {
-    "@types/cls-hooked": "^4.3.3",
     "@types/bunyan": "^1.8.8",
+    "@types/cls-hooked": "^4.3.3",
     "@types/koa": "^2.13.5",
     "@types/koa-bodyparser": "^4.3.6",
     "@types/koa-json": "^2.0.20",
@@ -49,7 +41,7 @@
     "@types/sinon": "^10.0.11",
     "@typescript-eslint/eslint-plugin": "^5.12.1",
     "@typescript-eslint/parser": "^5.12.1",
-    "ava": "^4.1.0",
+    "ava": "^5.2.0",
     "eslint": "^8.27.0",
     "node-mocks-http": "^1.12.1",
     "nodemon": "^2.0.20",

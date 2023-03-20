@@ -1,8 +1,8 @@
-import { MongoRepository } from '../../../lib/mongo/index.js'
+import { MongoRepository } from '../../lib/mongo/index.js'
 import { Account } from './types.js'
 import { ulid } from 'ulid'
 import { DateTime } from 'luxon'
-import { ID_ENV_PREFIX } from '../../../lib/service-context/index.js'
+import { ID_ENV_PREFIX } from '../../lib/service-context/index.js'
 
 function generateAccountID(): string {
 	return [

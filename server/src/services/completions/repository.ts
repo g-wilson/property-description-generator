@@ -1,9 +1,18 @@
-import { MongoRepository } from '../../../lib/mongo/index.js'
-import { Completion, CompletionRepository, PendingCompletion, RepositoryCreateParams, RepositoryUpdateParams, Status, SuccessfulCompletion } from './types.js'
 import { ulid } from 'ulid'
 import { DateTime } from 'luxon'
-import { ID_ENV_PREFIX } from '../../../lib/service-context/index.js'
 import createHttpError from 'http-errors'
+
+import {
+	Completion,
+	CompletionRepository,
+	PendingCompletion,
+	RepositoryCreateParams,
+	RepositoryUpdateParams,
+	Status,
+	SuccessfulCompletion,
+} from './types.js'
+import { MongoRepository } from '../../lib/mongo/index.js'
+import { ID_ENV_PREFIX } from '../../lib/service-context/index.js'
 
 function generateCompletionId(): string {
 	return [
@@ -56,7 +65,7 @@ export class CompletionRepositoryMongo extends MongoRepository implements Comple
 			.find({
 				account_id: accountId,
 				status: Status.success,
-				type: type,
+				type,
 			})
 			.sort('created_at', -1)
 			.limit(limit)

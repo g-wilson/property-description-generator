@@ -1,8 +1,8 @@
 import { middleware as jsonschema } from 'koa-json-schema'
 
 import { ListedCompletion, toReturnableCompletion } from './adapter.js'
-import { ServerContext } from '../../middleware/context.js'
-import { COMPLETION_TYPES } from '../../../app/services/completions/types.js'
+import { ServerContext } from '../middleware/context.js'
+import { COMPLETION_TYPES } from '../../services/completions/types.js'
 
 export const schema = jsonschema({
 	type: 'object',
@@ -11,7 +11,7 @@ export const schema = jsonschema({
 	properties: {
 		limit: {
 			type: 'string',
-			pattern: '^[0-9]{1,2}$'
+			pattern: '^[0-9]{1,2}$',
 		},
 	},
 })

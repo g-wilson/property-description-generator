@@ -110,6 +110,11 @@ function getResponseLogFields(ctx: Context): Record<string, any> {
 	f.httpRequest.status = ctx.response.status
 	f.httpRequest.responseSize = ctx.response.length
 
+	const a = ctx.getAuth()
+
+	f.auth_user_id = a.userId
+	f.auth_account_id = a.accountId
+
 	if (ctx.error) {
 		f.error = ctx.error.message
 		f.errorCause = ctx.error.cause

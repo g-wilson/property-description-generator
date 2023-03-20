@@ -1,8 +1,8 @@
 import createHttpError from 'http-errors'
-import { OpenAIApi, CreateChatCompletionRequest } from 'openai'
+import { OpenAIApi, CreateChatCompletionRequest, ChatCompletionRequestMessage } from 'openai'
 
 import { CompletionServiceInterface, COMPLETION_TYPES } from '../completions/types.js'
-import { getRequestLogger } from '../../../lib/logger/index.js'
+import { getRequestLogger } from '../../lib/logger/index.js'
 
 export type UKPropertyListingCharacter = {
 	new_build: boolean
@@ -111,9 +111,9 @@ export class UKPropertyService {
 		this.completionService = opts.completionService
 	}
 
-	private createPrompt(params: UKPropertyListingPromptParams): string {
+	private createPrompt(params: UKPropertyListingPromptParams): ChatCompletionRequestMessage[] {
 		/* eslint-disable quotes,max-len */
-		return [
+		const initialUserMessage = [
 			`Generate a description for a property listing for in the style of Rightmove and Zoopla`,
 			`The type of property is ${params.property_type} across ${params.floors} floors.`,
 			`It has ${params.bedrooms} bedrooms and ${params.bathrooms} bathrooms`,
@@ -121,16 +121,18 @@ export class UKPropertyService {
 			`The description should mention if there are any shops, pubs, high streets, parks, stations or schools nearby and if they are walking distance.`,
 		].join('\n')
 		/* eslint-enable */
+
+		return [
+			{ role: 'system', content: 'You are helpfully generating passages of text which will be published on a website.' },
+			{ role: 'user', content: initialUserMessage },
+		]
 	}
 
 	async generateDescription(accountId: string, userId: string, params: UKPropertyListingPromptParams): Promise<string> {
 		const req: CreateChatCompletionRequest = {
 			...this.modelOptions,
 			user: accountId,
-			messages: [
-				{ role: 'system', content: 'You are helpfully generating passages of text which will be published on a website.' },
-				{ role: 'user', content: this.createPrompt(params) },
-			],
+			messages: this.createPrompt(params),
 		}
 
 		const cmpl = await this.completionService.createPending(accountId, userId, COMPLETION_TYPES.UK_PROPERTY_LISTING_V1, req)

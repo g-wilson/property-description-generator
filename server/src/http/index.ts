@@ -4,6 +4,7 @@ import Router from 'koa-router'
 import env from 'require-env'
 import openai from 'openai'
 import { initializeApp, applicationDefault } from 'firebase-admin/app'
+import { OAuth2Client } from 'google-auth-library'
 
 import { getMongoDatabase, getMongoClient } from '../lib/mongo/index.js'
 import { logger, createMiddleware as createRequestLogMiddleware } from '../lib/logger/index.js'
@@ -12,12 +13,14 @@ import status from './middleware/status.js'
 import error from './middleware/error.js'
 import notFound from './middleware/not-found.js'
 
-import v1routes from './v1/index.js'
+import accountRoutes from './account/index.js'
+import completionsRoutes from './completions/index.js'
 
-import { AccountService } from '../app/services/accounts/service.js'
-import { AccountRepositoryMongo } from '../app/services/accounts/repository.js'
-import { CompletionService } from '../app/services/completions/index.js'
-import { CompletionRepositoryMongo } from '../app/services/completions/repository.js'
+import { AccountService } from '../services/accounts/service.js'
+import { AccountRepositoryMongo } from '../services/accounts/repository.js'
+import { CompletionService } from '../services/completions/index.js'
+import { CompletionRepositoryMongo } from '../services/completions/repository.js'
+import { FirebaseWrapper } from '../lib/firebase/index.js'
 
 async function init() {
 	const server = new Koa<Koa.DefaultState, ServerDefaultContext>({ proxy: true })
@@ -29,7 +32,8 @@ async function init() {
 	server.use(createRequestLogMiddleware())
 	server.use(error())
 
-	router.use('/v1', v1routes.middleware())
+	router.use('/account', accountRoutes.middleware())
+	router.use('/completions', completionsRoutes.middleware())
 
 	server.use(router.middleware())
 
@@ -70,8 +74,9 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	const completionRepository = new CompletionRepositoryMongo({ mongoClient, mongodb })
 	const completionService = new CompletionService({ repository: completionRepository })
 
-	ctx.getFirebase = () => firebase
+	ctx.getFirebase = () => new FirebaseWrapper(firebase)
 	ctx.getMongoDB = () => mongodb
+	ctx.getGoogleOauthClient = () => new OAuth2Client()
 	ctx.getOpenAI = () => openaiClient
 	ctx.getAccountService = () => accountService
 	ctx.getCompletionService = () => completionService
