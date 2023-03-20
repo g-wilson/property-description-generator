@@ -6,7 +6,7 @@ import env from 'require-env'
 import { getMongoClient, getMongoDatabase } from '../../src/lib/mongo/index.js'
 import {
 	APIHelper,
-	createTestAPIServer,
+	// createTestAPIServer,
 } from './_utils.js'
 
 type TestUser = { userId: string, phoneNumber: string }
@@ -33,7 +33,7 @@ test.before(async t => {
 	await mongodb.collection('accounts').deleteMany({ users: 'dev_usr_622f7c16fc13ae6e690001a5' })
 
 	// you can launch the API in testenv mode
-	const serverProcess = await createTestAPIServer()
+	// const serverProcess = await createTestAPIServer()
 
 	// you can send "authenticated" requests to it
 	const user = { userId: '622f7c16fc13ae6e690001a5', phoneNumber: '+19000000002' }
@@ -49,13 +49,13 @@ test.before(async t => {
 		user,
 		api,
 		accountId: startRes?.data.account_id,
-		serverProcess,
+		// serverProcess,
 	}
 })
 
-test.after(async t => {
-	t.context.serverProcess?.kill()
-})
+// test.after(async t => {
+// 	t.context.serverProcess?.kill()
+// })
 
 test.serial('api: get account fails with other account', async t => {
 	const { api } = t.context
@@ -100,40 +100,40 @@ test.serial('api: list completions', async t => {
 	t.deepEqual(res?.data.completions, [])
 })
 
-// test.serial('api: list api keys is empty', async t => {
-// 	const { api, accountId } = t.context
+test.serial('api: list api keys is empty', async t => {
+	const { api, accountId } = t.context
 
-// 	const res = await api.get(`/account/${accountId}/api_keys`)
+	const res = await api.get(`/account/${accountId}/api_keys`)
 
-// 	t.deepEqual(res?.data.keys, [])
-// })
+	t.deepEqual(res?.data.keys, [])
+})
 
-// test.serial('api: create api key', async t => {
-// 	const { api, accountId } = t.context
+test.serial('api: create api key', async t => {
+	const { api, accountId } = t.context
 
-// 	const res = await api.post(`/account/${accountId}/create_api_key`, {})
+	const res = await api.post(`/account/${accountId}/create_api_key`, {})
 
-// 	t.truthy(res?.data.key.id)
-// 	t.truthy(res?.data.secret)
+	t.truthy(res?.data.key._id)
+	t.truthy(res?.data.secret)
 
-// 	const res2 = await api.get(`/account/${accountId}/api_keys`)
+	const res2 = await api.get(`/account/${accountId}/api_keys`)
 
-// 	t.is(res2?.data.keys.length, 1)
-// })
+	t.is(res2?.data.keys.length, 1)
+})
 
-// test.serial('api: revoke api key', async t => {
-// 	const { api, accountId } = t.context
+test.serial('api: revoke api key', async t => {
+	const { api, accountId } = t.context
 
-// 	const resKeys = await api.get(`/account/${accountId}/api_keys`)
+	const resKeys = await api.get(`/account/${accountId}/api_keys`)
 
-// 	await t.notThrowsAsync(() => api.post(`/account/${accountId}/revoke_api_key`, {
-// 		key_id: resKeys?.data.keys[0].id,
-// 	}))
+	await t.notThrowsAsync(() => api.post(`/account/${accountId}/revoke_api_key`, {
+		key_id: resKeys?.data.keys[0]._id,
+	}))
 
-// 	const res2 = await api.get(`/account/${accountId}/api_keys`)
+	const res2 = await api.get(`/account/${accountId}/api_keys`)
 
-// 	t.is(res2?.data.keys.length, 0)
-// })
+	t.is(res2?.data.keys.length, 0)
+})
 
 test.serial.skip('api: completion succeeds', async t => {
 	const { api } = t.context

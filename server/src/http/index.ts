@@ -21,6 +21,8 @@ import { AccountRepositoryMongo } from '../services/accounts/repository.js'
 import { CompletionService } from '../services/completions/index.js'
 import { CompletionRepositoryMongo } from '../services/completions/repository.js'
 import { FirebaseWrapper } from '../lib/firebase/index.js'
+import { ApikeyRepositoryMongo } from '../services/apikeys/repository.js'
+import { ApikeyService } from '../services/apikeys/index.js'
 
 async function init() {
 	const server = new Koa<Koa.DefaultState, ServerDefaultContext>({ proxy: true })
@@ -71,6 +73,9 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	const accountRepository = new AccountRepositoryMongo({ mongoClient, mongodb })
 	const accountService = new AccountService({ repository: accountRepository })
 
+	const apikeyRepository = new ApikeyRepositoryMongo({ mongoClient, mongodb })
+	const apikeyService = new ApikeyService({ repository: apikeyRepository })
+
 	const completionRepository = new CompletionRepositoryMongo({ mongoClient, mongodb })
 	const completionService = new CompletionService({ repository: completionRepository })
 
@@ -79,6 +84,7 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	ctx.getGoogleOauthClient = () => new OAuth2Client()
 	ctx.getOpenAI = () => openaiClient
 	ctx.getAccountService = () => accountService
+	ctx.getApikeyService = () => apikeyService
 	ctx.getCompletionService = () => completionService
 }
 

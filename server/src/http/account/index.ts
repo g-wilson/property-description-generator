@@ -8,6 +8,9 @@ import createAuthMiddleware from '../middleware/auth.js'
 import * as start from './start.js'
 import * as agreeTerms from './agree_terms.js'
 import * as getAccount from './get_account.js'
+import * as listApiKeys from './list_api_keys.js'
+import * as createApiKey from './create_api_key.js'
+import * as revokeApiKey from './revoke_api_key.js'
 
 const router = new Router<DefaultState, ServerContext>()
 
@@ -30,6 +33,6 @@ router.post('/:account_id/agree_terms', agreeTerms.schema, agreeTerms.handler)
 /**
  * API Keys
  */
-// router.get('/:account_id/api_keys', listApiKeys.schema, listApiKeys.handler)
-// router.post('/:account_id/create_api_key', createApiKey.schema, createApiKey.handler)
-// router.post('/:account_id/revoke_api_key', revokeApiKey.schema, revokeApiKey.handler)
+router.get('/:account_id/api_keys', listApiKeys.schema, listApiKeys.handler)
+router.post('/:account_id/create_api_key', createApiKey.schema, createApiKey.handler)
+router.post('/:account_id/revoke_api_key', revokeApiKey.schema, revokeApiKey.handler)
