@@ -1,6 +1,6 @@
 import { middleware as jsonschema } from 'koa-json-schema'
 
-import { UKPropertyService, UKPropertyListingPromptParams } from '../../services/ukproperty/index.js'
+import { UKPropertyListingPromptParams } from '../../services/ukproperty/types.js'
 import { ServerContext } from '../middleware/context.js'
 
 export const schema = jsonschema({
@@ -50,11 +50,8 @@ type UKPropertyListingResponse = {
 
 export async function handler(ctx: ServerContext<UKPropertyListingRequest, UKPropertyListingResponse>) {
 	const auth = ctx.getAuth()
-	const openai = ctx.getOpenAI()
-	const completionService = ctx.getCompletionService()
+	const ukProperty = ctx.getUKPropertyService()
 	const params = ctx.request.body
-
-	const ukProperty = new UKPropertyService({ openai, completionService })
 
 	const response = await ukProperty.generateDescription(auth.getAccount(), auth.getUser(), params)
 

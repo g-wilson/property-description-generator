@@ -135,11 +135,11 @@ test.serial('api: revoke api key', async t => {
 	t.is(res2?.data.keys.length, 0)
 })
 
-test.serial.skip('api: completion succeeds', async t => {
+test.serial('api: completion succeeds', async t => {
 	const { api } = t.context
 
 	const res = await api.post('/completions/uk_property_listing/create', {
-		postcode: 'EC1R 0HA',
+		postcode: 'SE22 9EX',
 		property_type: 'flat',
 		floors: 1,
 		bedrooms: 2,

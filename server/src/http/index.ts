@@ -5,8 +5,12 @@ import env from 'require-env'
 import openai from 'openai'
 import { initializeApp, applicationDefault } from 'firebase-admin/app'
 import { OAuth2Client } from 'google-auth-library'
+import { Client as GoogleMapsClient } from '@googlemaps/google-maps-services-js'
 
+import { OpenAIChat } from '../lib/openai/index.js'
+import { PostcodesIOClient } from '../lib/postcodesio/index.js'
 import { getMongoDatabase, getMongoClient } from '../lib/mongo/index.js'
+
 import { logger, createMiddleware as createRequestLogMiddleware } from '../lib/logger/index.js'
 import { ServerDefaultContext, ServerContext } from './middleware/context.js'
 import status from './middleware/status.js'
@@ -23,6 +27,8 @@ import { CompletionRepositoryMongo } from '../services/completions/repository.js
 import { FirebaseWrapper } from '../lib/firebase/index.js'
 import { ApikeyRepositoryMongo } from '../services/apikeys/repository.js'
 import { ApikeyService } from '../services/apikeys/index.js'
+import { LocationHelper } from '../services/ukproperty/location.js'
+import { UKPropertyService } from '../services/ukproperty/index.js'
 
 async function init() {
 	const server = new Koa<Koa.DefaultState, ServerDefaultContext>({ proxy: true })
@@ -69,6 +75,7 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	const openaiClient = new openai.OpenAIApi(new openai.Configuration({
 		apiKey: env.require('OPENAI_API_KEY'),
 	}))
+	const chatClient = new OpenAIChat({ openai: openaiClient })
 
 	const accountRepository = new AccountRepositoryMongo({ mongoClient, mongodb })
 	const accountService = new AccountService({ repository: accountRepository })
@@ -79,13 +86,21 @@ async function attachDependencies(ctx: ServerDefaultContext) {
 	const completionRepository = new CompletionRepositoryMongo({ mongoClient, mongodb })
 	const completionService = new CompletionService({ repository: completionRepository })
 
+	const googleMapsClient = new GoogleMapsClient({})
+	const locationsClient = new LocationHelper({
+		googleMapsAPIKey: env.require('GOOGLE_MAPS_API_KEY'),
+		postcodesio: new PostcodesIOClient(),
+		googleMaps: googleMapsClient,
+	})
+	const ukPropertyService = new UKPropertyService({ chatClient, locationsClient, completionService })
+
 	ctx.getFirebase = () => new FirebaseWrapper(firebase)
 	ctx.getMongoDB = () => mongodb
 	ctx.getGoogleOauthClient = () => new OAuth2Client()
-	ctx.getOpenAI = () => openaiClient
 	ctx.getAccountService = () => accountService
 	ctx.getApikeyService = () => apikeyService
 	ctx.getCompletionService = () => completionService
+	ctx.getUKPropertyService = () => ukPropertyService
 }
 
 try {

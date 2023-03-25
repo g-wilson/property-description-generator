@@ -6,7 +6,6 @@ import {
 	PendingCompletion,
 	SuccessfulCompletion,
 	OpenAICompletionResult,
-	OpenAICreateCompletionParams,
 	COMPLETION_TYPES,
 } from './types.js'
 
@@ -18,13 +17,13 @@ export class CompletionService implements CompletionServiceInterface {
 		this.repo = opts.repository
 	}
 
-	async createPending(accountId: string, userId: string, type: string, params: OpenAICreateCompletionParams): Promise<PendingCompletion> {
+	async createPending(accountId: string, userId: string, type: string, params: Record<string, any>): Promise<PendingCompletion> {
 		return await this.repo.create({
 			user_id: userId,
 			account_id: accountId,
 			status: Status.pending,
 			type,
-			openai_params: params,
+			params,
 		})
 	}
 
