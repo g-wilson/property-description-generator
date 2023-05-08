@@ -10,6 +10,7 @@ As well as this core function, the service also includes the following features 
 - Ability to generate API keys for an account (and list/revoke them)
 - A very very basic way to validate that users have agreed some terms and conditions
 - A way to view the history of the descriptions generated
+- A way for the service-owner to track OpenAI API usage details
 - An API designed to allow serving different kinds of AI completions in future
 
 ### Tech stack / dependencies
