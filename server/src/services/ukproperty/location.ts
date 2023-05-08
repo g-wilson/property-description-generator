@@ -38,9 +38,10 @@ export class LocationHelper implements LocationHelperInterface {
 			if (e === errorInvalidPostcode)
 				throw e
 
-			if (e instanceof Error)
+			if (e instanceof Error) {
 				if (e.message === ERROR_INVALID_POSTCODE)
 					throw errorInvalidPostcode
+			}
 
 			throw e
 		}

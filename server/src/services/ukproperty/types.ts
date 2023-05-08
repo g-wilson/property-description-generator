@@ -37,13 +37,6 @@ export type UKPropertyListingCharacter = {
 	seventies?: boolean
 	eighties?: boolean
 	nineties?: boolean
-	conversion?: boolean
-	barn_conversion?: boolean
-	townhouse?: boolean
-	maisonette?: boolean
-	farmhouse?: boolean
-	cottage?: boolean
-	manor?: boolean
 }
 
 export type UKPropertyListingInterior = {
@@ -56,12 +49,7 @@ export type UKPropertyListingInterior = {
 	open_plan_living?: boolean
 	kitchen_dining?: boolean
 	ensuite_master?: boolean
-	multiple_ensuite?: boolean
 	utility_room?: boolean
-	annexe?: boolean
-	stone_floor?: boolean
-	wood_floor?: boolean
-	tiled_floor?: boolean
 }
 
 export type UKPropertyListingExterior = {

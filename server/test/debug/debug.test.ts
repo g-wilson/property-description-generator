@@ -139,7 +139,7 @@ test.serial('api: completion succeeds', async t => {
 	const { api } = t.context
 
 	const res = await api.post('/completions/uk_property_listing/create', {
-		postcode: 'SE22 9EX',
+		postcode: 'SW18 2RX',
 		property_type: 'flat',
 		floors: 1,
 		bedrooms: 2,
